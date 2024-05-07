@@ -4,7 +4,7 @@
 // - protoc             v5.26.1
 // source: Director.proto
 
-package Director_proto
+package Director
 
 import (
 	context "context"
