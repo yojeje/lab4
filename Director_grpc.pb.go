@@ -104,6 +104,92 @@ var Mercenario_ServiceDesc = grpc.ServiceDesc{
 	Metadata: "Director.proto",
 }
 
+// ConectadosClient is the client API for Conectados service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ConectadosClient interface {
+	UsuariosConectados(ctx context.Context, in *Vacio, opts ...grpc.CallOption) (*Conectados, error)
+}
+
+type conectadosClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewConectadosClient(cc grpc.ClientConnInterface) ConectadosClient {
+	return &conectadosClient{cc}
+}
+
+func (c *conectadosClient) UsuariosConectados(ctx context.Context, in *Vacio, opts ...grpc.CallOption) (*Conectados, error) {
+	out := new(Conectados)
+	err := c.cc.Invoke(ctx, "/grpc.Conectados/UsuariosConectados", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ConectadosServer is the server API for Conectados service.
+// All implementations must embed UnimplementedConectadosServer
+// for forward compatibility
+type ConectadosServer interface {
+	UsuariosConectados(context.Context, *Vacio) (*Conectados, error)
+	mustEmbedUnimplementedConectadosServer()
+}
+
+// UnimplementedConectadosServer must be embedded to have forward compatible implementations.
+type UnimplementedConectadosServer struct {
+}
+
+func (UnimplementedConectadosServer) UsuariosConectados(context.Context, *Vacio) (*Conectados, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UsuariosConectados not implemented")
+}
+func (UnimplementedConectadosServer) mustEmbedUnimplementedConectadosServer() {}
+
+// UnsafeConectadosServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ConectadosServer will
+// result in compilation errors.
+type UnsafeConectadosServer interface {
+	mustEmbedUnimplementedConectadosServer()
+}
+
+func RegisterConectadosServer(s grpc.ServiceRegistrar, srv ConectadosServer) {
+	s.RegisterService(&Conectados_ServiceDesc, srv)
+}
+
+func _Conectados_UsuariosConectados_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Vacio)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConectadosServer).UsuariosConectados(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.Conectados/UsuariosConectados",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConectadosServer).UsuariosConectados(ctx, req.(*Vacio))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Conectados_ServiceDesc is the grpc.ServiceDesc for Conectados service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Conectados_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc.Conectados",
+	HandlerType: (*ConectadosServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "UsuariosConectados",
+			Handler:    _Conectados_UsuariosConectados_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "Director.proto",
+}
+
 // Piso1Client is the client API for Piso1 service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
