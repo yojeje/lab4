@@ -18,6 +18,92 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
+// MontoClient is the client API for Monto service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type MontoClient interface {
+	ConsultarMonto(ctx context.Context, in *Vacio, opts ...grpc.CallOption) (*MontoRequest, error)
+}
+
+type montoClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewMontoClient(cc grpc.ClientConnInterface) MontoClient {
+	return &montoClient{cc}
+}
+
+func (c *montoClient) ConsultarMonto(ctx context.Context, in *Vacio, opts ...grpc.CallOption) (*MontoRequest, error) {
+	out := new(MontoRequest)
+	err := c.cc.Invoke(ctx, "/grpc.monto/ConsultarMonto", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// MontoServer is the server API for Monto service.
+// All implementations must embed UnimplementedMontoServer
+// for forward compatibility
+type MontoServer interface {
+	ConsultarMonto(context.Context, *Vacio) (*MontoRequest, error)
+	mustEmbedUnimplementedMontoServer()
+}
+
+// UnimplementedMontoServer must be embedded to have forward compatible implementations.
+type UnimplementedMontoServer struct {
+}
+
+func (UnimplementedMontoServer) ConsultarMonto(context.Context, *Vacio) (*MontoRequest, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConsultarMonto not implemented")
+}
+func (UnimplementedMontoServer) mustEmbedUnimplementedMontoServer() {}
+
+// UnsafeMontoServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to MontoServer will
+// result in compilation errors.
+type UnsafeMontoServer interface {
+	mustEmbedUnimplementedMontoServer()
+}
+
+func RegisterMontoServer(s grpc.ServiceRegistrar, srv MontoServer) {
+	s.RegisterService(&Monto_ServiceDesc, srv)
+}
+
+func _Monto_ConsultarMonto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Vacio)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MontoServer).ConsultarMonto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpc.monto/ConsultarMonto",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MontoServer).ConsultarMonto(ctx, req.(*Vacio))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Monto_ServiceDesc is the grpc.ServiceDesc for Monto service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Monto_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "grpc.monto",
+	HandlerType: (*MontoServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ConsultarMonto",
+			Handler:    _Monto_ConsultarMonto_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "Director.proto",
+}
+
 // MercenarioClient is the client API for Mercenario service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
