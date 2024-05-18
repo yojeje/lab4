@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MontoClient interface {
-	ConsultarMonto(ctx context.Context, in *Vacio, opts ...grpc.CallOption) (*MontoRequest, error)
+	ConsultarMonto(ctx context.Context, in *MontoRequest, opts ...grpc.CallOption) (*Vacio, error)
 }
 
 type montoClient struct {
@@ -33,8 +33,8 @@ func NewMontoClient(cc grpc.ClientConnInterface) MontoClient {
 	return &montoClient{cc}
 }
 
-func (c *montoClient) ConsultarMonto(ctx context.Context, in *Vacio, opts ...grpc.CallOption) (*MontoRequest, error) {
-	out := new(MontoRequest)
+func (c *montoClient) ConsultarMonto(ctx context.Context, in *MontoRequest, opts ...grpc.CallOption) (*Vacio, error) {
+	out := new(Vacio)
 	err := c.cc.Invoke(ctx, "/grpc.monto/ConsultarMonto", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (c *montoClient) ConsultarMonto(ctx context.Context, in *Vacio, opts ...grp
 // All implementations must embed UnimplementedMontoServer
 // for forward compatibility
 type MontoServer interface {
-	ConsultarMonto(context.Context, *Vacio) (*MontoRequest, error)
+	ConsultarMonto(context.Context, *MontoRequest) (*Vacio, error)
 	mustEmbedUnimplementedMontoServer()
 }
 
@@ -54,7 +54,7 @@ type MontoServer interface {
 type UnimplementedMontoServer struct {
 }
 
-func (UnimplementedMontoServer) ConsultarMonto(context.Context, *Vacio) (*MontoRequest, error) {
+func (UnimplementedMontoServer) ConsultarMonto(context.Context, *MontoRequest) (*Vacio, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConsultarMonto not implemented")
 }
 func (UnimplementedMontoServer) mustEmbedUnimplementedMontoServer() {}
@@ -71,7 +71,7 @@ func RegisterMontoServer(s grpc.ServiceRegistrar, srv MontoServer) {
 }
 
 func _Monto_ConsultarMonto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Vacio)
+	in := new(MontoRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func _Monto_ConsultarMonto_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/grpc.monto/ConsultarMonto",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MontoServer).ConsultarMonto(ctx, req.(*Vacio))
+		return srv.(MontoServer).ConsultarMonto(ctx, req.(*MontoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
